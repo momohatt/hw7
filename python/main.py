@@ -58,10 +58,10 @@ class Game:
             look_x += delta_x
             look_y += delta_y
         if Pos(new_board, look_x, look_y) == player and len(flip_list) > 0:
-                        # there's a continuous line of our opponents
-                        # pieces between our own pieces at
-                        # [look_x,look_y] and the newly placed one at
-                        # [x,y], making it a legal move.
+            # there's a continuous line of our opponents
+            # pieces between our own pieces at
+            # [look_x,look_y] and the newly placed one at
+            # [x,y], making it a legal move.
             SetPos(new_board, x, y, player)
             for flip_move in flip_list:
                 flip_x = flip_move[0]
@@ -113,8 +113,8 @@ def SetPos(board, x, y, piece):
         return False
     board[y-1][x-1] = piece
 
-def Evaluate(board, player):
-    tmp_board = copy.deepcopy(board)
+def Evaluate(g, myself): ##player: represents for whom this board is worth this point
+    tmp_board = copy.deepcopy(g._board["Pieces"])
     for r in range(0, 8):
         for c in range(0, 8):
             if tmp_board[r][c] == 2:
@@ -130,26 +130,72 @@ def Evaluate(board, player):
     score += (tmp_board[3][3] + tmp_board[3][4] + tmp_board[4][3] + tmp_board[4][4]) * w[2]
     score += (tmp_board[0][1] + tmp_board[0][6] + tmp_board[1][0] + tmp_board[1][7] 
             + tmp_board[6][0] + tmp_board[6][7] + tmp_board[7][1] + tmp_board[7][6]) * w[3]
-    if player == 1:
+    if myself == 1:
         return score
     else:
         return -1 * score
 
-def pickBestMove(g, valid_moves, player):
+
+def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee the future
+    if depth == 0:
+        return Evaluate(g, myself)
+    valid_moves = g.ValidMoves()
+    if len(valid_moves) == 0:
+        return Evaluate(g, myself)
+
+    print "next : ", g._board["Next"]
+    print valid_moves
+    #print PrettyPrint(g._board["Pieces"])
+    origin_g = copy.deepcopy(g)
+    if g._board["Next"] == myself:
+        maximum = -999999
+        for move in valid_moves:
+            #SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
+            g.NextBoardPosition(move)
+            #g._board["Next"] = 3 - myself
+            print PrettyPrint(g._board["Pieces"])
+            value = MiniMax(g, depth - 1, myself)
+            if (value > maximum):
+                maximum = value
+            print "depth : ", depth, " maximum : ", maximum," when ", move
+            g = copy.deepcopy(origin_g)
+        print "depth : ", depth , " true maximum : ", maximum
+        return maximum
+
+    if g._board["Next"] != myself:
+        print "opponent's turn"
+        minimum = 999999
+        for move in valid_moves:
+            #SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
+            g.NextBoardPosition(move)
+            #g._board["Next"] = myself
+            print PrettyPrint(g._board["Pieces"])
+            value = MiniMax(g, depth - 1, myself)
+            if (value < minimum):
+                minimum = value
+            print "depth : ", depth, " minimum : ", minimum, " when ", move
+            g = copy.deepcopy(origin_g)
+        print "depth: ", depth, " true minimum : ", minimum
+        return minimum
+
+
+def PickBestMove(g, valid_moves): ##the player who gets the turn is decided by the game
+    player = g._board["Next"]
     origin_board = copy.deepcopy(g._board["Pieces"])
-    best_score = -99999
+    best_score = -999999
     best_move = {"Where":[1, 1] , "As":player}
     for move in valid_moves:
-        SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], player)
-        print(move, " score = ", Evaluate(g._board["Pieces"], player))
-        print(PrettyPrint(g._board["Pieces"]))
+        SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
+        #print(move, " score = ", Evaluate(g)
+        #print(PrettyPrint(g._board["Pieces"]))
         g.NextBoardPosition(move)
-        if Evaluate(g._board["Pieces"], player) > best_score:
-            best_score = Evaluate(g._board["Pieces"], player)
+        if MiniMax(g, 2, player) > best_score:
+            best_score = MiniMax(g, 2, player)
             best_move = move
-            print("best_move:", best_move)
+            print "best_move:", best_move
         g._board["Pieces"] = copy.deepcopy(origin_board)
     return best_move
+
 
 # Debug function to pretty print the array representation of board.
 def PrettyPrint(board, nl="\n"):
@@ -200,8 +246,8 @@ Paste JSON here:<p/><textarea name=json cols=80 rows=24></textarea>
             # TO STEP STUDENTS:
             # You'll probably want to change how this works, to do something
             # more clever than just picking a random move.
-            move = pickBestMove(g, valid_moves, g._board["Next"])
-            print(move)
+            move = PickBestMove(g, valid_moves)
+            #print(move)
             self.response.write(PrettyMove(move))
 
 app = webapp2.WSGIApplication([
