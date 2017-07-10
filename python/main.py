@@ -96,6 +96,7 @@ class Game:
         new_board["Next"] = 3 - self.Next()
         return Game(board=new_board)
 
+
 # Returns piece on the board.
 # 0 for no pieces, 1 for player 1, 2 for player 2.
 # None for coordinate out of scope.
@@ -107,11 +108,13 @@ def Pos(board, x, y):
         return board[y-1][x-1]
     return None
 
+
 # Set piece on the board at (x,y) coordinate
 def SetPos(board, x, y, piece):
     if x < 1 or 8 < x or y < 1 or 8 < y or piece not in [0,1,2]:
         return False
     board[y-1][x-1] = piece
+
 
 def Evaluate(g, myself): ##player: represents for whom this board is worth this point
     tmp_board = copy.deepcopy(g._board["Pieces"])
@@ -143,18 +146,19 @@ def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee th
     if len(valid_moves) == 0:
         return Evaluate(g, myself)
 
-    print "next : ", g._board["Next"]
-    print valid_moves
+    #print "next : ", g._board["Next"]
+    #print valid_moves
     #print PrettyPrint(g._board["Pieces"])
     origin_g = copy.deepcopy(g)
     if g._board["Next"] == myself:
+        print "my turn"
         maximum = -999999
         for move in valid_moves:
-            #SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
-            g.NextBoardPosition(move)
-            #g._board["Next"] = 3 - myself
-            print PrettyPrint(g._board["Pieces"])
-            value = MiniMax(g, depth - 1, myself)
+            gnext = g.NextBoardPosition(move)
+            #print PrettyPrint(gnext._board["Pieces"])
+            #print PrettyPrint(g._board["Pieces"])
+            #print "next : ", gnext._board["Next"]
+            value = MiniMax(gnext, depth - 1, myself)
             if (value > maximum):
                 maximum = value
             print "depth : ", depth, " maximum : ", maximum," when ", move
@@ -166,11 +170,10 @@ def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee th
         print "opponent's turn"
         minimum = 999999
         for move in valid_moves:
-            #SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
-            g.NextBoardPosition(move)
-            #g._board["Next"] = myself
-            print PrettyPrint(g._board["Pieces"])
-            value = MiniMax(g, depth - 1, myself)
+            gnext = g.NextBoardPosition(move)
+            #print PrettyPrint(gnext._board["Pieces"])
+            print "next : " , gnext._board["Next"]
+            value = MiniMax(gnext, depth - 1, myself)
             if (value < minimum):
                 minimum = value
             print "depth : ", depth, " minimum : ", minimum, " when ", move
@@ -188,7 +191,7 @@ def PickBestMove(g, valid_moves): ##the player who gets the turn is decided by t
         SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
         #print(move, " score = ", Evaluate(g)
         #print(PrettyPrint(g._board["Pieces"]))
-        g.NextBoardPosition(move)
+        gnext = g.NextBoardPosition(move)
         if MiniMax(g, 2, player) > best_score:
             best_score = MiniMax(g, 2, player)
             best_move = move
