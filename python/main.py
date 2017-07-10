@@ -146,18 +146,17 @@ def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee th
     if len(valid_moves) == 0:
         return Evaluate(g, myself)
 
-    #print "next : ", g._board["Next"]
-    #print valid_moves
-    #print PrettyPrint(g._board["Pieces"])
+    print "next : ", g._board["Next"]
+    print valid_moves
+    print PrettyPrint(g._board["Pieces"])
     origin_g = copy.deepcopy(g)
     if g._board["Next"] == myself:
         print "my turn"
         maximum = -999999
         for move in valid_moves:
             gnext = g.NextBoardPosition(move)
-            #print PrettyPrint(gnext._board["Pieces"])
-            #print PrettyPrint(g._board["Pieces"])
-            #print "next : ", gnext._board["Next"]
+            print PrettyPrint(gnext._board["Pieces"])
+            print "next : ", gnext._board["Next"]
             value = MiniMax(gnext, depth - 1, myself)
             if (value > maximum):
                 maximum = value
@@ -171,7 +170,7 @@ def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee th
         minimum = 999999
         for move in valid_moves:
             gnext = g.NextBoardPosition(move)
-            #print PrettyPrint(gnext._board["Pieces"])
+            print PrettyPrint(gnext._board["Pieces"])
             print "next : " , gnext._board["Next"]
             value = MiniMax(gnext, depth - 1, myself)
             if (value < minimum):
@@ -188,12 +187,12 @@ def PickBestMove(g, valid_moves): ##the player who gets the turn is decided by t
     best_score = -999999
     best_move = {"Where":[1, 1] , "As":player}
     for move in valid_moves:
-        SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
-        #print(move, " score = ", Evaluate(g)
-        #print(PrettyPrint(g._board["Pieces"]))
+        #SetPos(g._board["Pieces"], move["Where"][0], move["Where"][1], move["As"])
+        #print move, " score = ", Evaluate(g)
+        #print PrettyPrint(g._board["Pieces"])
         gnext = g.NextBoardPosition(move)
-        if MiniMax(g, 2, player) > best_score:
-            best_score = MiniMax(g, 2, player)
+        if MiniMax(gnext, 2, player) > best_score:
+            best_score = MiniMax(gnext, 2, player)
             best_move = move
             print "best_move:", best_move
         g._board["Pieces"] = copy.deepcopy(origin_board)
@@ -241,6 +240,7 @@ Paste JSON here:<p/><textarea name=json cols=80 rows=24></textarea>
     def pickMove(self, g):
         # Gets all valid moves.
         valid_moves = g.ValidMoves()
+        print "main: valid: " , valid_moves
         if len(valid_moves) == 0:
             # Passes if no valid moves.
             self.response.write("PASS")

@@ -20,11 +20,10 @@ w = [100, 610.2, -112.3, -194.9]
 def main():
     f = open('./input.json', 'r')
     g = Game(f.read())
-    gtmp = Game(f.read())
     #print g._board
     f.close()
     pickMove(g)
-    #test(gtmp)
+
 
 def pickMove(g):
     valid_moves = g.ValidMoves()
@@ -35,7 +34,7 @@ def pickMove(g):
         print "NEXT MOVE : ", PrettyMove(move)
 
 #def test(g):
-#    move1 = {"Where": [4, 3], "As": 1}
+#    move1 = {"Where": [6, 5], "As": 1}
 #    print "------test start------"
 #    if g.NextBoardPosition(move1):
 #        gnext = g.NextBoardPosition(move1)
