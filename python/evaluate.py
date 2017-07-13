@@ -5,7 +5,7 @@ import json
 import logging
 import random
 
-w = [818.9, -25.2, 11.8, 6.3, 87.8, -237.9, -40.0, -49.4, -559.0, -1063.2]
+w = [808.2, -28.7, 9.3, 35.6, 84.4, -256.3, -22.7, -53.6, -1731.1, -3331.5]
 
 def Evaluate(g, myself): ##player: represents for whom this board is worth this point
     tmp_board = copy.deepcopy(g._board["Pieces"])
@@ -59,6 +59,7 @@ def Evaluate(g, myself): ##player: represents for whom this board is worth this 
     else:
         print "score = ", score, " numOfPieces * 400 = ", numOfPieces * 400
         return score + numOfPieces * 400
+    #return score
 
 def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee the future
     if depth == 0:
