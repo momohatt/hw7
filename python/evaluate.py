@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#from main import Game
-#from main import Pos
-#from main import SetPos
-#from main import PrettyPrint
-#from main import PrettyMove
 import copy
 import json
 import logging
 import random
 
-w = [100, 670.3, -95.8, -121.8, -36.0, -321.6, -104.0, -79.6, -78.0]
+w = [770.3, 4.2, -21.8, 64.0, -221.6, -4.0, 20.4, 22.0]
 
 def Evaluate(g, myself): ##player: represents for whom this board is worth this point
     tmp_board = copy.deepcopy(g._board["Pieces"])
@@ -21,26 +16,26 @@ def Evaluate(g, myself): ##player: represents for whom this board is worth this 
     #print(PrettyPrint(tmp_board))
 
     score = 0
-    for row in tmp_board:
-        for piece in row:
-            score += piece * w[0]
+    #for row in tmp_board:
+    #    for piece in row:
+    #        score += piece * w[0]
 
-    score += (tmp_board[0][0] + tmp_board[0][7] + tmp_board[7][0] + tmp_board[7][7]) * w[1]
-    score += (tmp_board[3][3] + tmp_board[3][4] + tmp_board[4][3] + tmp_board[4][4]) * w[2]
+    score += (tmp_board[0][0] + tmp_board[0][7] + tmp_board[7][0] + tmp_board[7][7]) * w[0]
+    score += (tmp_board[3][3] + tmp_board[3][4] + tmp_board[4][3] + tmp_board[4][4]) * w[1]
     score += (tmp_board[0][1] + tmp_board[0][6] + tmp_board[1][0] + tmp_board[1][7] 
-            + tmp_board[6][0] + tmp_board[6][7] + tmp_board[7][1] + tmp_board[7][6]) * w[3]
+            + tmp_board[6][0] + tmp_board[6][7] + tmp_board[7][1] + tmp_board[7][6]) * w[2]
     score += (tmp_board[0][2] + tmp_board[0][3] + tmp_board[0][4] + tmp_board[0][5]
             + tmp_board[2][0] + tmp_board[2][7] + tmp_board[3][0] + tmp_board[3][7]
             + tmp_board[4][0] + tmp_board[4][7] + tmp_board[5][0] + tmp_board[5][7] 
-            + tmp_board[7][2] + tmp_board[7][3] + tmp_board[7][4] + tmp_board[7][5]) * w[4]
-    score += (tmp_board[1][1] + tmp_board[1][6] + tmp_board[6][1] + tmp_board[6][6]) * w[5]
+            + tmp_board[7][2] + tmp_board[7][3] + tmp_board[7][4] + tmp_board[7][5]) * w[3]
+    score += (tmp_board[1][1] + tmp_board[1][6] + tmp_board[6][1] + tmp_board[6][6]) * w[4]
     score += (tmp_board[1][2] + tmp_board[1][3] + tmp_board[1][4] + tmp_board[1][5] 
             + tmp_board[2][1] + tmp_board[2][6] + tmp_board[3][1] + tmp_board[3][6]
             + tmp_board[4][1] + tmp_board[4][6] + tmp_board[5][1] + tmp_board[5][6] 
-            + tmp_board[6][2] + tmp_board[6][3] + tmp_board[6][4] + tmp_board[6][5]) * w[6]
-    score += (tmp_board[2][2] + tmp_board[2][5] + tmp_board[5][2] + tmp_board[5][5]) * w[7]
+            + tmp_board[6][2] + tmp_board[6][3] + tmp_board[6][4] + tmp_board[6][5]) * w[5]
+    score += (tmp_board[2][2] + tmp_board[2][5] + tmp_board[5][2] + tmp_board[5][5]) * w[6]
     score += (tmp_board[2][3] + tmp_board[2][4] + tmp_board[3][2] + tmp_board[3][5] 
-            + tmp_board[4][2] + tmp_board[4][5] + tmp_board[5][3] + tmp_board[5][4]) * w[8]
+            + tmp_board[4][2] + tmp_board[4][5] + tmp_board[5][3] + tmp_board[5][4]) * w[7]
 
     numOfPieces = 0 
     for row in g._board["Pieces"]:
@@ -54,7 +49,10 @@ def Evaluate(g, myself): ##player: represents for whom this board is worth this 
         else:
             return score * 0.2 + numOfPieces * 80
     else:
-        return -1 * score
+        if numOfPieces > 50:
+            return -0.2 * score + numOfPieces * 80
+        else:
+            return -1 * score
 
 
 def MiniMax(g, depth, myself): ##myself: represents for whom we are to forsee the future
